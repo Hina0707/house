@@ -1,0 +1,8 @@
+# 인증키, 설치 패키지와 로컬 배포 설정을 제외합니다.
+.env
+.env.*
+!.env.example
+node_modules/
+.npm-cache/
+.vercel/
+.local-test-data.json
