@@ -13,7 +13,7 @@
 
 1. 이 저장소를 Vercel의 새 프로젝트로 가져옵니다.
 2. Framework Preset은 **Other**, Root Directory는 저장소 루트로 설정합니다.
-3. 별도 빌드 명령은 필요하지 않습니다. Output Directory는 기본값을 사용합니다.
+3. 저장소의 `vercel.json`이 빌드 명령 `npm run build`, Output Directory `dist`를 자동 지정합니다. 화면은 정적 파일, `/api/trades`는 별도 서버 함수로 배포합니다.
 4. Environment Variables에 **MOLIT_KEY**를 추가하고 Decoding 인증키를 값으로 넣습니다. Production과 사용할 Preview 환경에 적용합니다.
 5. 배포 후 `/api/trades?region=11680&end=202610&months=3`에서 JSON 응답을 확인할 수 있습니다.
 6. 배포 후 환경변수를 변경했다면 재배포합니다.
@@ -37,10 +37,11 @@
 | --- | --- |
 | `index.html` | 화면 구성과 입력 조건 |
 | `style.css` | 반응형 디자인과 서울남산체 |
-| `app.js` | 통계·그래프·필터·표·내려받기 |
+| `script.js` | 통계·그래프·필터·표·내려받기 |
 | `api/trades.js` | 환경변수로 API 호출, XML 파싱, 페이지 조회, 취소 거래 제외 |
 | `regions.json` | 빠른 선택 지역의 법정동 코드 |
-| `server.cjs` | 화면과 API를 제공하는 로컬 개발 서버 |
+| `tools/dev-server.cjs` | 화면과 API를 제공하는 로컬 개발 서버 |
+| `tools/build.cjs` | 화면 파일만 dist로 복사하는 배포 준비 |
 | `vercel.json` | 서울 리전과 서버 함수 실행 시간 설정 |
 | `.env.example` | 환경변수 이름 예시 |
 | `test/app.test.cjs` | 금액·면적·결측·XML·페이지 처리 검증 |

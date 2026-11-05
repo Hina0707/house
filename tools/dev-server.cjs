@@ -4,12 +4,13 @@
 const http = require("node:http");
 const fs = require("node:fs/promises");
 const path = require("node:path");
-const handler = require("./api/trades.js");
+const handler = require("../api/trades.js");
+const root = path.resolve(__dirname, "..");
 const files = new Map([
   ["/", ["index.html", "text/html; charset=utf-8"]],
   ["/index.html", ["index.html", "text/html; charset=utf-8"]],
   ["/style.css", ["style.css", "text/css; charset=utf-8"]],
-  ["/app.js", ["app.js", "text/javascript; charset=utf-8"]],
+  ["/script.js", ["script.js", "text/javascript; charset=utf-8"]],
   ["/regions.json", ["regions.json", "application/json; charset=utf-8"]]
 ]);
 const server = http.createServer(async (req, res) => {
@@ -29,7 +30,7 @@ const server = http.createServer(async (req, res) => {
     if (!["GET", "HEAD"].includes(req.method)) return res.status(405).json({ message: "조회 요청만 사용할 수 있습니다." });
     const file = files.get(url.pathname);
     if (!file) return res.status(404).json({ message: "페이지를 찾을 수 없습니다." });
-    const body = await fs.readFile(path.join(__dirname, file[0]));
+    const body = await fs.readFile(path.join(root, file[0]));
     res.setHeader("Content-Type", file[1]);
     res.setHeader("Cache-Control", "no-store");
     res.end(req.method === "HEAD" ? undefined : body);

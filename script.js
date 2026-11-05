@@ -1,6 +1,6 @@
 "use strict";
 
-// 조회 자료와 화면에서 고른 비교 조건을 따로 보관합니다.
+// 브라우저에서 조회 자료와 화면에서 고른 비교 조건을 따로 보관합니다.
 const $ = (id) => document.getElementById(id);
 const state = { payload: null, regionName: "서울 강남구", region: "11680", period: "6", area: "all", apartment: "all", metric: "median", search: "", sort: "recent", page: 1, loading: false };
 const PAGE_SIZE = 12;

@@ -11,7 +11,7 @@ const { monthRange, normalize, checkPayload } = handler.helpers;
 const originalFetch = global.fetch;
 
 function frontend() {
-  const source = fs.readFileSync(path.join(__dirname, "../app.js"), "utf8");
+  const source = fs.readFileSync(path.join(__dirname, "../script.js"), "utf8");
   const context = vm.createContext({});
   vm.runInContext(source.slice(0, source.indexOf("// 입력값, 모바일")) + "\nglobalThis.logic = {summarize, formatMoney, areaMatches, monthlyStats, tableRows, configure(value){Object.assign(state,value);}};", context);
   return context.logic;

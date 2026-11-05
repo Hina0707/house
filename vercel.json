@@ -1,5 +1,8 @@
 {
   "$schema": "https://openapi.vercel.sh/vercel.json",
+  "framework": null,
+  "buildCommand": "npm run build",
+  "outputDirectory": "dist",
   "regions": ["icn1"],
   "functions": { "api/trades.js": { "maxDuration": 60 } }
 }

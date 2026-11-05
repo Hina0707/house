@@ -6,3 +6,4 @@ node_modules/
 .npm-cache/
 .vercel/
 .local-test-data.json
+dist/
