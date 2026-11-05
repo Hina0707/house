@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="국토교통부 아파트 매매 실거래가로 우리 동네 집값의 흐름을 확인하세요.">
+  <meta name="theme-color" content="#174b3a">
+  <title>동네집값 · 우리 동네 집값 변화 보기</title>
+  <!-- 화면, 글꼴과 동작을 각각 연결합니다. -->
+  <link rel="stylesheet" href="style.css">
+  <script src="app.js" defer></script>
+</head>
+<body>
+  <a class="skip-link" href="#dashboard">본문으로 바로 가기</a>
+  <header class="site-header">
+    <div class="header-inner">
+      <a class="brand" href="./" aria-label="동네집값 처음 화면">
+        <span class="brand-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none"><path d="m3 10 9-7 9 7M5 9v12h14V9M9 21v-7h6v7" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+      </a>
+      <nav aria-label="주요 메뉴"><a class="nav-active" href="#dashboard">집값 흐름</a><a href="#transactions">최근 거래</a></nav>
+      <a class="source-link" href="https://www.data.go.kr/data/15126469/openapi.do" target="_blank" rel="noopener noreferrer">국토교통부 공공데이터 ↗</a>
+    </div>
+  </header>
+
+  <main class="container" id="dashboard">
+    <section class="intro" aria-labelledby="page-title">
+      <div><p class="eyebrow"><span class="live-dot"></span> 아파트 매매 실거래가</p><h1 id="page-title">우리 동네 집값,<br class="mobile-break"> <em>어떻게 달라졌을까요?</em></h1></div>
+      <div class="intro-tag" aria-hidden="true"><span>우리 동네</span><strong>집값 기록</strong><svg viewBox="0 0 100 42" fill="none"><path d="M2 36 22 27 39 30 58 13 77 19 98 3" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/><path d="m85 3 13 0 0 13" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+    </section>
+
+    <!-- 조회 조건을 제출한 뒤에만 새 지역의 자료를 불러옵니다. -->
+    <form id="query-form" class="query-panel">
+      <div class="field region-field"><label for="region">어느 동네가 궁금하세요?</label><select id="region" name="region"><option value="11680">서울 강남구</option></select></div>
+      <div id="custom-field" class="field" hidden><label for="custom-code">다른 지역 코드</label><input id="custom-code" inputmode="numeric" maxlength="5" placeholder="예: 11110" aria-describedby="code-help"><small id="code-help">법정동 코드 앞 5자리</small></div>
+      <div class="field"><label for="end-month">기준 계약월</label><input id="end-month" type="month" required min="2006-01"></div>
+      <fieldset class="period-field"><legend>조회 기간</legend><div class="segmented" id="periods"><button type="button" data-period="3" aria-pressed="false">3개월</button><button type="button" data-period="6" aria-pressed="true">6개월</button><button type="button" data-period="12" aria-pressed="false">1년</button></div></fieldset>
+      <button id="query-button" class="primary-button" type="submit"><span aria-hidden="true">⌕</span> 집값 살펴보기</button>
+    </form>
+    <div id="feedback" class="feedback" role="status" aria-live="polite"><span class="spinner" aria-hidden="true"></span> 실거래 자료를 불러오는 중입니다.</div>
+    <div id="error-panel" class="error-panel" role="alert" hidden><div><strong>잠시, 자료를 가져오지 못했어요.</strong><p id="error-message"></p></div><button id="retry-button" type="button">다시 조회하기</button></div>
+
+    <!-- 지역 자료를 다시 요청하지 않고 면적과 아파트별로 비교합니다. -->
+    <section class="scope-bar" aria-label="거래 비교 조건">
+      <div><span class="scope-label">전용면적</span><div class="area-filters" id="area-filters" role="group" aria-label="전용면적별 보기"><button type="button" data-area="all" aria-pressed="true">전체</button><button type="button" data-area="small" aria-pressed="false">60㎡ 이하</button><button type="button" data-area="medium" aria-pressed="false">60~85㎡</button><button type="button" data-area="large" aria-pressed="false">85㎡ 초과</button></div></div>
+      <div class="apartment-field"><label for="apartment">아파트</label><select id="apartment" disabled><option value="all">전체 아파트</option></select></div>
+    </section>
+
+    <section class="overview" aria-labelledby="overview-title">
+      <div class="section-heading"><h2 id="overview-title">서울 강남구 <span>한눈에 보기</span></h2><span id="metric-month" class="muted">자료 확인 중</span></div>
+      <div class="stat-grid">
+        <article class="stat-card featured"><div class="stat-label">중위 거래금액 <span class="stat-tag">가운데 값</span></div><p class="stat-value" id="median-value">—</p><p class="stat-detail" id="median-change">자료를 불러오고 있어요.</p></article>
+        <article class="stat-card"><div class="stat-label">평균 거래금액</div><p class="stat-value" id="average-value">—</p><p class="stat-detail" id="average-change">—</p></article>
+        <article class="stat-card"><div class="stat-label">거래 건수</div><p class="stat-value" id="count-value">—</p><p class="stat-detail" id="count-change">—</p></article>
+        <article class="stat-card"><div class="stat-label">평균 ㎡당 거래금액</div><p class="stat-value" id="unit-value">—</p><p class="stat-detail">선택한 조건의 전용면적 기준</p></article>
+      </div>
+    </section>
+
+    <div class="analytics-grid">
+      <section class="panel chart-panel" aria-labelledby="trend-title">
+        <div class="panel-header"><div><p class="overline">시간에 따라 살펴보기</p><h2 id="trend-title">월별 집값의 흐름</h2></div><div class="segmented compact" id="chart-metrics" role="group" aria-label="그래프 거래금액 기준"><button type="button" data-metric="median" aria-pressed="true">중위값</button><button type="button" data-metric="average" aria-pressed="false">평균</button></div></div>
+        <div class="chart-meta"><span id="chart-range">—</span><span class="chart-legend"><i></i><span id="chart-metric-label">중위 거래금액</span><span class="muted">· 억 원</span></span></div>
+        <div id="chart" class="chart" aria-busy="true"><p class="chart-empty">거래금액의 흐름을 불러오는 중...</p></div>
+        <div class="chart-caption"><span id="chart-insight">거래가 없는 달은 선을 이어 그리지 않습니다.</span><span class="muted">점에 마우스를 올리면 자세히 볼 수 있어요.</span></div>
+        <details class="monthly-details"><summary>월별 숫자로 보기</summary><div class="table-scroll"><table class="monthly-table"><caption class="sr-only">선택한 지역과 조건의 월별 거래 통계</caption><thead><tr><th scope="col">계약월</th><th scope="col">중위금액</th><th scope="col">평균금액</th><th scope="col">거래량</th></tr></thead><tbody id="monthly-body"></tbody></table></div></details>
+      </section>
+
+      <section class="panel distribution-panel" aria-labelledby="distribution-title">
+        <div class="panel-header"><div><p class="overline">조회 기간 전체</p><h2 id="distribution-title">어떤 집이 거래됐을까요?</h2></div><span class="mini-icon" aria-hidden="true">▥</span></div>
+        <p class="distribution-copy">전용면적별 거래 비중</p><div id="distribution" class="distribution"></div>
+        <div class="distribution-total"><span>조건에 맞는 전체 거래</span><strong id="range-count">—</strong></div>
+        <div class="note-box"><strong>같은 크기의 집끼리 비교해 보세요.</strong><p>면적과 아파트를 좁히면 서로 다른 집이 섞여 생기는 차이를 줄일 수 있어요.</p></div>
+      </section>
+    </div>
+
+    <section class="panel transactions" id="transactions" aria-labelledby="transactions-title">
+      <div class="panel-header"><div><p class="overline">숫자 뒤에 있는 실제 거래</p><h2 id="transactions-title">최근 거래 내역 <span id="table-count" class="count-chip">0</span></h2></div><button id="download-button" class="text-button" type="button" disabled>↓ 자료 내려받기</button></div>
+      <div class="table-toolbar"><div class="search-field"><label class="sr-only" for="search">아파트 이름 또는 법정동 검색</label><span aria-hidden="true">⌕</span><input id="search" type="search" placeholder="아파트 이름, 동 이름으로 찾아보세요" disabled></div><div><label class="sr-only" for="sort">거래 정렬</label><select id="sort"><option value="recent">최근 계약순</option><option value="high">높은 가격순</option><option value="low">낮은 가격순</option><option value="area">넓은 면적순</option></select></div></div>
+      <div class="table-scroll"><table class="trade-table"><caption class="sr-only">아파트 매매 실거래가 목록</caption><thead><tr><th scope="col">아파트 / 위치</th><th scope="col">계약일</th><th scope="col">거래금액</th><th scope="col">전용면적</th><th scope="col">층</th><th scope="col">거래유형</th></tr></thead><tbody id="trade-body"><tr><td colspan="6" class="table-empty">실거래 자료를 불러오고 있어요.</td></tr></tbody></table></div>
+      <div class="pagination"><span id="page-info">—</span><div><button id="previous-page" type="button" disabled aria-label="이전 페이지">← 이전</button><span id="page-number">1 / 1</span><button id="next-page" type="button" disabled aria-label="다음 페이지">다음 →</button></div></div>
+    </section>
+
+    <aside class="data-notes"><span class="info-mark" aria-hidden="true">i</span><div><strong>거래금액의 변화와 집값 상승률은 다를 수 있어요.</strong><p>이 화면은 선택한 조건의 신고 거래를 단순 집계합니다. 매달 거래된 아파트·면적·층의 구성이 달라지므로 가격지수로 해석하지 마세요. 최근 계약은 신고에 따라 추가될 수 있습니다.</p><p id="exclusion-note">해제·취소 거래와 금액·면적을 확인할 수 없는 거래는 제외합니다.</p></div></aside>
+    <footer class="site-footer"><span class="footer-brand">동네집값</span><span>자료 출처 · <a href="https://www.data.go.kr/data/15126469/openapi.do" target="_blank" rel="noopener noreferrer">국토교통부 아파트 매매 실거래가</a></span><span id="updated-at">—</span></footer>
+  </main>
+</body>
+</html>

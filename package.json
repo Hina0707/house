@@ -1,0 +1,16 @@
+{
+  "name": "neighborhood-home-prices",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "dev": "node --env-file=.env.local server.cjs",
+    "start": "node server.cjs",
+    "test": "node --test"
+  },
+  "engines": {
+    "node": ">=22"
+  },
+  "dependencies": {
+    "fast-xml-parser": "5.12.0"
+  }
+}
